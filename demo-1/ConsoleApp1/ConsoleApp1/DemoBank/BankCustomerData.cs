@@ -38,6 +38,9 @@ public class BankCustomerData
     public string POutcome { get; set; }
     [LoadColumn(16)]
     public bool Subscribed { get; set; }
+    
+    [LoadColumn(17)]
+    public float BankScore { get; set; }
 
     
 

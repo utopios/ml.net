@@ -3,4 +3,4 @@
 using ConsoleApp1.DemoBank;
 
 Console.WriteLine("Hello, World!");
-new IHM().Start();
+new IHM().StartPCA();
