@@ -12,4 +12,10 @@
       <PackageReference Include="Microsoft.ML" Version="2.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Data\bank.csv">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

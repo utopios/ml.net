@@ -6,7 +6,7 @@ namespace ConsoleApp1.DemoBank;
 public class IHM
 {
     private MLContext _context;
-    private string _dataPath = Path.Combine(Environment.CurrentDirectory, "Data", "bank");
+    private string _dataPath = Path.Combine(Environment.CurrentDirectory, "Data", "bank.csv");
 
     public IHM()
     {
@@ -16,7 +16,8 @@ public class IHM
     public void Start()
     {
         //Chargement des données
-        var data = _context.Data.LoadFromTextFile<BankCustomerData>(_dataPath);
+        var data = _context.Data.LoadFromTextFile<BankCustomerData>(_dataPath, separatorChar:',', hasHeader:true);
+        var result = data.Preview().RowView;
         var preprocessingPipeline = _context.Transforms.Conversion.MapValueToKey("Label", "Subscribed")
             .Append(_context.Transforms.Categorical.OneHotEncoding("JobEncoded", "Job"))
             .Append(_context.Transforms.Categorical.OneHotEncoding("MaritalEncoded", "Marital"))
@@ -27,6 +28,27 @@ public class IHM
             .Append(_context.Transforms.Categorical.OneHotEncoding("ContactEncoded", "Contact"))
             .Append(_context.Transforms.Categorical.OneHotEncoding("MonthEncoded", "Month"))
             .Append(_context.Transforms.Categorical.OneHotEncoding("POutcomeEncoded", "POutcome"))
-            .Append(_context.Transforms.ReplaceMissingValues("balance", "balance", MissingValueReplacingEstimator.ReplacementMode.Mean));
+            .Append(_context.Transforms.ReplaceMissingValues("Balance", "Balance",
+                MissingValueReplacingEstimator.ReplacementMode.Mean))
+            .Append(_context.Transforms.Concatenate("NumericFeatures", "Age", "Balance", "Day", "PDays",
+                "Duration", "Campaign", "Previous"))
+            .Append(_context.Transforms.NormalizeMinMax("NumericFeatures", "NumericFeatures"))
+            .Append(_context.Transforms.Concatenate("Features", "JobEncoded", "MaritalEncoded", "EducationEncoded",
+                "HousingEncoded", "LoanEncoded", "ContactEncoded", "MonthEncoded", "POutcomeEncoded",
+                "NumericFeatures"))
+            .Append(_context.Transforms.Conversion.MapKeyToValue("Label"))
+            .Append(_context.BinaryClassification.Trainers.SdcaLogisticRegression("Label", "Features"));
+
+        var tt = _context.Data.TrainTestSplit(data, testFraction: 0.2);
+        //Train
+        var model = preprocessingPipeline.Fit(tt.TrainSet);
+        
+        //Prédictions sur les données test
+        var predictions = model.Transform(tt.TestSet);
+
+        var metric = _context.BinaryClassification.Evaluate(predictions);
+        
+        Console.WriteLine($"Accuracy: {metric.Accuracy}");
+
     }
 }
