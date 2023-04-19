@@ -35,3 +35,10 @@
 /Users/ihababadi/Desktop/ML.NET/demo-1/ConsoleApp1/ConsoleApp1/bin/Debug/net6.0/Data/bank.csv
 /Users/ihababadi/Desktop/ML.NET/demo-1/ConsoleApp1/ConsoleApp1/bin/Debug/net6.0/Data/bank_2.csv
 /Users/ihababadi/Desktop/ML.NET/demo-1/ConsoleApp1/ConsoleApp1/bin/Debug/net6.0/Data/bank_2_test.csv
+/Users/ihababadi/Desktop/ML.NET/demo-1/ConsoleApp1/ConsoleApp1/bin/Debug/net6.0/Microsoft.ML.FastTree.dll
+/Users/ihababadi/Desktop/ML.NET/demo-1/ConsoleApp1/ConsoleApp1/bin/Debug/net6.0/runtimes/linux-x64/native/libFastTreeNative.so
+/Users/ihababadi/Desktop/ML.NET/demo-1/ConsoleApp1/ConsoleApp1/bin/Debug/net6.0/runtimes/osx-x64/native/libFastTreeNative.dylib
+/Users/ihababadi/Desktop/ML.NET/demo-1/ConsoleApp1/ConsoleApp1/bin/Debug/net6.0/runtimes/win-x64/native/FastTreeNative.dll
+/Users/ihababadi/Desktop/ML.NET/demo-1/ConsoleApp1/ConsoleApp1/bin/Debug/net6.0/runtimes/win-x86/native/FastTreeNative.dll
+/Users/ihababadi/Desktop/ML.NET/demo-1/ConsoleApp1/ConsoleApp1/bin/Debug/net6.0/Data/houses-test.csv
+/Users/ihababadi/Desktop/ML.NET/demo-1/ConsoleApp1/ConsoleApp1/bin/Debug/net6.0/Data/houses.csv

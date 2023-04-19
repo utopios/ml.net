@@ -1,12 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "aY5s+K+4BLHLB7mRgMqamQNlXzgoQiD1+hIvIZPQinN8NMsHskKMoFy9bOQv6/08M2D6n3WT//dcmSN2w7+RQQ==",
+  "dgSpecHash": "lhLpoe2X/Lo0t4MxX2YBR45c0HlhXBuorCcjktFDiiOnUS697HSw9e+1YXR7wAZOt5E1csCBm4emfmrllAtHYw==",
   "success": true,
   "projectFilePath": "/Users/ihababadi/Desktop/ML.NET/demo-1/ConsoleApp1/ConsoleApp1/ConsoleApp1.csproj",
   "expectedPackageFiles": [
     "/Users/ihababadi/.nuget/packages/microsoft.ml/2.0.1/microsoft.ml.2.0.1.nupkg.sha512",
     "/Users/ihababadi/.nuget/packages/microsoft.ml.cpumath/2.0.1/microsoft.ml.cpumath.2.0.1.nupkg.sha512",
     "/Users/ihababadi/.nuget/packages/microsoft.ml.dataview/2.0.1/microsoft.ml.dataview.2.0.1.nupkg.sha512",
+    "/Users/ihababadi/.nuget/packages/microsoft.ml.fasttree/2.0.1/microsoft.ml.fasttree.2.0.1.nupkg.sha512",
     "/Users/ihababadi/.nuget/packages/microsoft.netcore.platforms/1.1.0/microsoft.netcore.platforms.1.1.0.nupkg.sha512",
     "/Users/ihababadi/.nuget/packages/microsoft.netcore.targets/1.1.0/microsoft.netcore.targets.1.1.0.nupkg.sha512",
     "/Users/ihababadi/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512",
