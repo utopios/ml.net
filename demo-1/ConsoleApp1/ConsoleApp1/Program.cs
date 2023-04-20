@@ -4,6 +4,7 @@ using ConsoleApp1.ClassificationText;
 using ConsoleApp1.DemoBank;
 using ConsoleApp1.MultiClassificationSimple;
 using ConsoleApp1.regressionsimple;
+using ConsoleApp1.TP;
 
 // Console.WriteLine("Hello, World!");
 // new IHM().StartPCA();
@@ -16,3 +17,4 @@ new HouseRegression().Start();
 //Sentiment
 //new Demo().Sentiment();
 
+new TP1().Start();

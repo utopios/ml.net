@@ -53,3 +53,4 @@
 /Users/ihababadi/Desktop/ML.NET/demo-1/ConsoleApp1/ConsoleApp1/obj/Debug/net6.0/ConsoleApp1.genruntimeconfig.cache
 /Users/ihababadi/Desktop/ML.NET/demo-1/ConsoleApp1/ConsoleApp1/obj/Debug/net6.0/ref/ConsoleApp1.dll
 /Users/ihababadi/Desktop/ML.NET/demo-1/ConsoleApp1/ConsoleApp1/bin/Debug/net6.0/ICSharpCode.SharpZipLib.dll
+/Users/ihababadi/Desktop/ML.NET/demo-1/ConsoleApp1/ConsoleApp1/bin/Debug/net6.0/Data/energy-data.csv
