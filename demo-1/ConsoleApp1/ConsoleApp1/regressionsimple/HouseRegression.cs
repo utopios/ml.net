@@ -1,4 +1,6 @@
 using Microsoft.ML;
+using Microsoft.ML.Trainers;
+using Microsoft.ML.Trainers.FastTree;
 
 namespace ConsoleApp1.regressionsimple;
 
@@ -23,15 +25,47 @@ public class HouseRegression
     public (ITransformer, IDataView) TrainData()
     {
         var dataView = _context.Data.LoadFromTextFile<HouseData>(dataPath, hasHeader: true, separatorChar: ',');
-        var pipeline = _context.Transforms.CopyColumns("Label", "Price")
+        var dataViewTest = _context.Data.LoadFromTextFile<HouseData>(dataPathTest, hasHeader: true, separatorChar: ',');
+        var bestModel = _context.Transforms.CopyColumns("Label", "Price")
             .Append(_context.Transforms.Concatenate("Features", "Size", "Bedrooms"))
             .Append(_context.Transforms.NormalizeMinMax("Features"))
-            .Append(_context.Regression.Trainers.FastTree());
+            .Append(_context.Regression.Trainers.Sdca()).Fit(dataView);
+        double bestScore = 0;
+        var l2 = new[] { 0.001, 0.01, 0.1, 1, 10 };
+        foreach (var fo in l2)
+        {
+            var pipeline = _context.Transforms.CopyColumns("Label", "Price")
+                .Append(_context.Transforms.Concatenate("Features", "Size", "Bedrooms"))
+                .Append(_context.Transforms.NormalizeMinMax("Features"))
+                .Append(_context.Regression.Trainers.Sdca(new SdcaRegressionTrainer.Options()
+                {
+                    L2Regularization = (float)fo
+                }));
         
-        Console.WriteLine("======== Create Pipeline And Train Model =========");
-        var model = pipeline.Fit(dataView);
-        Console.WriteLine("======== End Train ===============================");
-        return (model, dataView);
+            Console.WriteLine("======== Create Pipeline And Train Model =========");
+            var model = pipeline.Fit(dataView);
+            var predictions = model.Transform(dataViewTest);
+            var metrics = _context.Regression.Evaluate(predictions, "Label", "Score");
+            if (metrics.RSquared > bestScore)
+            {
+                bestScore = metrics.RSquared;
+                bestModel = model;
+            }
+        }
+
+        
+        // var pipeline = _context.Transforms.CopyColumns("Label", "Price")
+        //     .Append(_context.Transforms.Concatenate("Features", "Size", "Bedrooms"))
+        //     .Append(_context.Transforms.NormalizeMinMax("Features"))
+        //     .Append(_context.Regression.Trainers.Sdca(new SdcaRegressionTrainer.Options()
+        //     {
+        //         
+        //     }));
+        //
+        // Console.WriteLine("======== Create Pipeline And Train Model =========");
+        // var model = pipeline.Fit(dataView);
+        // Console.WriteLine("======== End Train ===============================");
+        return (bestModel, dataView);
     }
 
     public void Evaluate(ITransformer model)
