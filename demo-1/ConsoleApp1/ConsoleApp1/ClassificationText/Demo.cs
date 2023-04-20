@@ -73,34 +73,79 @@ public class Demo
 
     public void Sentiment()
     {
-        var data = _context.Data.LoadFromTextFile<SentimentData>("./Data/data-s.csv", hasHeader: true,
-            separatorChar: ',');
-
-        var pipeline = _context.Transforms.Expression("Label", "(x) => x == 1 ? true : false", "Sentiment")
-            .Append(_context.Transforms.Text.FeaturizeText("Features", "Text"))
-            .Append(_context.BinaryClassification.Trainers.SdcaLogisticRegression());
-
-
-        // var pipeline2 = _context.Transforms.Conversion.MapValueToKey(
-        //         outputColumnName: "Label", 
-        //         inputColumnName: "Label")
-        //     .Append(_context.MulticlassClassification.Trainers.TextClassification(
-        //         labelColumnName: "Label",
-        //         sentence1ColumnName: "Sentence",
-        //         architecture: BertArchitecture.Roberta))
-        //     .Append(_context.Transforms.Conversion.MapKeyToValue(
-        //         outputColumnName: "PredictedLabel", 
-        //         inputColumnName: "PredictedLabel"));
-        var model = pipeline.Fit(data);
-
-        var predictionEngine = _context.Model.CreatePredictionEngine<SentimentData, SentimentPrediction>(model);
-
-        var prediction = predictionEngine.Predict(new SentimentData() { Text = "I m not happy. " });
+        // var data = _context.Data.LoadFromTextFile<SentimentData>("./Data/data-s.csv", hasHeader: true,
+        //     separatorChar: ',');
+        //
+        // var pipeline = _context.Transforms.Expression("Label", "(x) => x == 1 ? true : false", "Sentiment")
+        //     .Append(_context.Transforms.Text.FeaturizeText("Features", "Text"))
+        //     .Append(_context.BinaryClassification.Trainers.SdcaLogisticRegression());
+        //
+        //
+        // // var pipeline2 = _context.Transforms.Conversion.MapValueToKey(
+        // //         outputColumnName: "Label", 
+        // //         inputColumnName: "Label")
+        // //     .Append(_context.MulticlassClassification.Trainers.TextClassification(
+        // //         labelColumnName: "Label",
+        // //         sentence1ColumnName: "Sentence",
+        // //         architecture: BertArchitecture.Roberta))
+        // //     .Append(_context.Transforms.Conversion.MapKeyToValue(
+        // //         outputColumnName: "PredictedLabel", 
+        // //         inputColumnName: "PredictedLabel"));
+        // var model = pipeline.Fit(data);
+        //
+        // var predictionEngine = _context.Model.CreatePredictionEngine<SentimentData, SentimentPrediction>(model);
+        //
+        // var prediction = predictionEngine.Predict(new SentimentData() { Text = "I m not happy. " });
+        //
+        // Console.WriteLine($"Prediction {prediction.Prediction} avec proba : {prediction.Probability}");
+        //
+        // prediction = predictionEngine.Predict(new SentimentData() { Text = "I m very happy. " });
+        //
+        // Console.WriteLine($"Prediction {prediction.Prediction} avec proba : {prediction.Probability}");
         
-        Console.WriteLine($"Prediction {prediction.Prediction} avec proba : {prediction.Probability}");
-
-        prediction = predictionEngine.Predict(new SentimentData() { Text = "I m very happy. " });
         
-        Console.WriteLine($"Prediction {prediction.Prediction} avec proba : {prediction.Probability}");
+        MLContext mlContext = new()
+        {
+            GpuDeviceId = 0,
+            FallbackToCpu = true
+        };
+        Console.WriteLine("Loading data...");
+        IDataView dataView = mlContext.Data.LoadFromTextFile<SentimentData>(
+            "./Data/data-tt.csv",
+            separatorChar: '\t',
+            hasHeader: false
+        );
+        IDataView dataViewTest = mlContext.Data.LoadFromTextFile<SentimentData>(
+            "./Data/data-t.csv",
+            separatorChar: '\t',
+            hasHeader: false
+        );
+        var d = mlContext.Data.CreateEnumerable<SentimentData>(dataView, reuseRowObject: false).ToList().Where(r => float.TryParse(r.Sentiment.ToString(), out float f)).ToList();
+        dataView = mlContext.Data.LoadFromEnumerable(d);
+        DataOperationsCatalog.TrainTestData dataSplit = mlContext.Data.TrainTestSplit(dataView, testFraction: 0.2);
+        IDataView trainData = dataSplit.TrainSet;
+        IDataView testData = dataSplit.TestSet;
+
+// Create a pipeline for training the model
+        var pipeline = mlContext.Transforms.Conversion.MapValueToKey(
+                outputColumnName: "Label",
+                inputColumnName: "Label")
+            .Append(mlContext.MulticlassClassification.Trainers.TextClassification(
+                labelColumnName: "Label",
+                sentence1ColumnName: "Sentence"))
+            .Append(mlContext.Transforms.Conversion.MapKeyToValue(
+                outputColumnName: "PredictedLabel",
+                inputColumnName: "PredictedLabel"));
+
+        Console.WriteLine("Training model...");
+        ITransformer model = pipeline.Fit(dataView);
+
+        IDataView transformedTest = model.Transform(dataViewTest);
+        MulticlassClassificationMetrics metrics = mlContext.MulticlassClassification.Evaluate(transformedTest);
+
+        Console.WriteLine($"Macro Accuracy: {metrics.MacroAccuracy}");
+        Console.WriteLine($"Micro Accuracy: {metrics.MicroAccuracy}");
+
+        Console.WriteLine();
     }
 }
