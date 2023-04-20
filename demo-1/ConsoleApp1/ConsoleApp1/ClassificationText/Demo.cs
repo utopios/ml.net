@@ -1,6 +1,7 @@
 using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.TorchSharp;
+using Microsoft.ML.TorchSharp.NasBert;
 using Microsoft.ML.Transforms.Text;
 
 namespace ConsoleApp1.ClassificationText;
@@ -75,15 +76,26 @@ public class Demo
         var data = _context.Data.LoadFromTextFile<SentimentData>("./Data/data-s.csv", hasHeader: true,
             separatorChar: ',');
 
-        var pipeline = _context.Transforms.Expression("Label", "(x) => x == 1 ? True : False", "Sentiment")
+        var pipeline = _context.Transforms.Expression("Label", "(x) => x == 1 ? true : false", "Sentiment")
             .Append(_context.Transforms.Text.FeaturizeText("Features", "Text"))
-            .Append(_context.MulticlassClassification.Trainers.TextClassification());
+            .Append(_context.BinaryClassification.Trainers.SdcaLogisticRegression());
 
+
+        // var pipeline2 = _context.Transforms.Conversion.MapValueToKey(
+        //         outputColumnName: "Label", 
+        //         inputColumnName: "Label")
+        //     .Append(_context.MulticlassClassification.Trainers.TextClassification(
+        //         labelColumnName: "Label",
+        //         sentence1ColumnName: "Sentence",
+        //         architecture: BertArchitecture.Roberta))
+        //     .Append(_context.Transforms.Conversion.MapKeyToValue(
+        //         outputColumnName: "PredictedLabel", 
+        //         inputColumnName: "PredictedLabel"));
         var model = pipeline.Fit(data);
 
         var predictionEngine = _context.Model.CreatePredictionEngine<SentimentData, SentimentPrediction>(model);
 
-        var prediction = predictionEngine.Predict(new SentimentData() { Text = "I m not fine. " });
+        var prediction = predictionEngine.Predict(new SentimentData() { Text = "I m not happy. " });
         
         Console.WriteLine($"Prediction {prediction.Prediction} avec proba : {prediction.Probability}");
 

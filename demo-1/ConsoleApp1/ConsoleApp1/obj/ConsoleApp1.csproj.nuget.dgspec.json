@@ -41,19 +41,15 @@
           "dependencies": {
             "Microsoft.ML": {
               "target": "Package",
-              "version": "[3.0.0-preview.22621.2, )"
+              "version": "[2.0.0, )"
             },
             "Microsoft.ML.FastTree": {
               "target": "Package",
-              "version": "[3.0.0-preview.22621.2, )"
+              "version": "[2.0.0, )"
             },
             "Microsoft.ML.TorchSharp": {
               "target": "Package",
-              "version": "[0.21.0-preview.22621.2, )"
-            },
-            "TorchSharp-cuda-linux": {
-              "target": "Package",
-              "version": "[0.99.4, )"
+              "version": "[0.20.0, )"
             }
           },
           "imports": [
