@@ -7,12 +7,12 @@ using ConsoleApp1.regressionsimple;
 
 // Console.WriteLine("Hello, World!");
 // new IHM().StartPCA();
-//new HouseRegression().Start();
+new HouseRegression().Start();
 //new FruitClassification().Start();
 
 //Embiddings
 //new Demo().Start();
 
 //Sentiment
-new Demo().Sentiment();
+//new Demo().Sentiment();
 

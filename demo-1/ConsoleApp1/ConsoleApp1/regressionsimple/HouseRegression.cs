@@ -18,8 +18,15 @@ public class HouseRegression
     public void Start()
     {
         var result = TrainData();
-        Evaluate(result.Item1);
-        Test(result.Item1, new HouseData(){Size = 2500, Bedrooms = 5});
+        //Evaluate(result.Item1);
+        
+        //Test(result.Item1, new HouseData(){Size = 2500, Bedrooms = 5});
+        
+        // Utilisation de validation croisée
+        var estimators = _context.Regression.Trainers.FastTree();
+        var results = _context.Regression.CrossValidate(result.Item1.Transform(result.Item2), estimators, 5);
+        var resultRsquard = results.Select(f => f.Metrics.RSquared);
+        
     }
 
     public (ITransformer, IDataView) TrainData()
@@ -29,29 +36,29 @@ public class HouseRegression
         var bestModel = _context.Transforms.CopyColumns("Label", "Price")
             .Append(_context.Transforms.Concatenate("Features", "Size", "Bedrooms"))
             .Append(_context.Transforms.NormalizeMinMax("Features"))
-            .Append(_context.Regression.Trainers.Sdca()).Fit(dataView);
+            .Append(_context.Regression.Trainers.FastTree()).Fit(dataView);
         double bestScore = 0;
-        var l2 = new[] { 0.001, 0.01, 0.1, 1, 10 };
-        foreach (var fo in l2)
-        {
-            var pipeline = _context.Transforms.CopyColumns("Label", "Price")
-                .Append(_context.Transforms.Concatenate("Features", "Size", "Bedrooms"))
-                .Append(_context.Transforms.NormalizeMinMax("Features"))
-                .Append(_context.Regression.Trainers.Sdca(new SdcaRegressionTrainer.Options()
-                {
-                    L2Regularization = (float)fo
-                }));
-        
-            Console.WriteLine("======== Create Pipeline And Train Model =========");
-            var model = pipeline.Fit(dataView);
-            var predictions = model.Transform(dataViewTest);
-            var metrics = _context.Regression.Evaluate(predictions, "Label", "Score");
-            if (metrics.RSquared > bestScore)
-            {
-                bestScore = metrics.RSquared;
-                bestModel = model;
-            }
-        }
+        // var l2 = new[] { 0.001, 0.01, 0.1, 1, 10 };
+        // foreach (var fo in l2)
+        // {
+        //     var pipeline = _context.Transforms.CopyColumns("Label", "Price")
+        //         .Append(_context.Transforms.Concatenate("Features", "Size", "Bedrooms"))
+        //         .Append(_context.Transforms.NormalizeMinMax("Features"))
+        //         .Append(_context.Regression.Trainers.Sdca(new SdcaRegressionTrainer.Options()
+        //         {
+        //             L2Regularization = (float)fo
+        //         }));
+        //
+        //     Console.WriteLine("======== Create Pipeline And Train Model =========");
+        //     var model = pipeline.Fit(dataView);
+        //     var predictions = model.Transform(dataViewTest);
+        //     var metrics = _context.Regression.Evaluate(predictions, "Label", "Score");
+        //     if (metrics.RSquared > bestScore)
+        //     {
+        //         bestScore = metrics.RSquared;
+        //         bestModel = model;
+        //     }
+        // }
 
         
         // var pipeline = _context.Transforms.CopyColumns("Label", "Price")
